@@ -6,20 +6,14 @@ import { useThemeStore } from './src/store/themeStore';
 import { getSystemTheme } from './src/utils/helpers';
 
 const App = () => {
-  const { theme, setTheme, loadTheme } = useThemeStore();
+  const { theme, setTheme, loadTheme, resetTheme } = useThemeStore();
   const systemTheme = useColorScheme();
 
   useEffect(() => {
     loadTheme();
   }, [loadTheme]);
 
-  useEffect(() => {
-    if (!theme) {
-      setTheme(getSystemTheme(systemTheme));
-    }
-  }, [theme, systemTheme, setTheme]);
-
-  const currentTheme = theme || getSystemTheme(systemTheme);
+  const currentTheme = theme || 'dark';
 
   return (
     <NavigationContainer>

@@ -10,10 +10,11 @@ interface ThemeState {
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   loadTheme: () => Promise<void>;
+  resetTheme: () => Promise<void>;
 }
 
 const themeStoreCreator: StateCreator<ThemeState> = set => ({
-  theme: (getSystemTheme() as Theme) || 'light',
+  theme: 'dark',
   loadTheme: async () => {
     try {
       const storedTheme = (await AsyncStorage.getItem(
@@ -21,6 +22,11 @@ const themeStoreCreator: StateCreator<ThemeState> = set => ({
       )) as Theme | null;
       if (storedTheme) {
         set({ theme: storedTheme });
+      } else {
+        // First time opening the app - set dark theme as default
+        const defaultTheme = 'dark';
+        await AsyncStorage.setItem(THEME_KEY, defaultTheme);
+        set({ theme: defaultTheme });
       }
     } catch (error) {
       console.error('Error loading theme from AsyncStorage:', error);
@@ -28,7 +34,7 @@ const themeStoreCreator: StateCreator<ThemeState> = set => ({
   },
   toggleTheme: () => {
     set(state => {
-      const newTheme = state.theme === 'light' ? 'dark' : 'light';
+      const newTheme = state.theme === 'light' ? 'dark' : 'light'; //theme
       AsyncStorage.setItem(THEME_KEY, newTheme);
       return { theme: newTheme };
     });
@@ -36,6 +42,14 @@ const themeStoreCreator: StateCreator<ThemeState> = set => ({
   setTheme: theme => {
     AsyncStorage.setItem(THEME_KEY, theme);
     set({ theme });
+  },
+  resetTheme: async () => {
+    try {
+      await AsyncStorage.removeItem(THEME_KEY);
+      set({ theme: 'dark' });
+    } catch (error) {
+      console.error('Error resetting theme:', error);
+    }
   },
 });
 

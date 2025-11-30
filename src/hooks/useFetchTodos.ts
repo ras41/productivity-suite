@@ -15,8 +15,10 @@ export const useFetchTodos = () => {
   } = useTasksStore();
 
   useEffect(() => {
-    refreshTasks();
-  }, [filter]);
+    if (tasks.length === 0) {
+      refreshTasks();
+    }
+  }, []);
 
   const filteredTasks = useMemo(() => {
     if (filter === 'active') {
